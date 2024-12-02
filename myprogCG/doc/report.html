@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Report Computer Graphics project 2023/2024</title>
+        <link rel="stylesheet" type="text/css" href="./stile.css">
+    </head>
+    <body>
+        <div class="container">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 bg" style="text-align: center !important;">
+                <h1>
+                    Progetto per il corso di Computer Graphics 2023-24 di Cristina Napoli - Matricola 0001103127<br>
+                </h1>
+            </div>            
+            <div>
+                <div>
+                    <h2>Indice</h2>
+                    <ul>
+                        <li>Introduzione progetto</li>
+                        <li>Ordinamento del programma</li>
+                        <li>Interfaccia del progetto</li>
+                        <li>Descrizione del programma</li>
+                        <li>References</li>
+                    </ul>
+                </div>
+                <div>
+                    <h2>Introduzione progetto</h2>
+                    <p>Il progetto è stato sviluppato per la materia  'Fondamenti di Computer Graphics', corso di studio 2023/2024, con l'obiettivo di sviluppare 
+                        una applicazione 3D interattiva utilizzando WebGL (HTML5, CSS e contesto webgl) e linguaggio JavaScript.</p>
+                    <p>La scena rappresenta un paesaggio sottomarino di forma cubica, si può pensare di aver estratto dal fondale un piccolo cubo
+                        acquatico, contenente alcune forme di vita che si muovono mosse dalle correnti marine.
+                    </p>
+                    <p>I modelli presenti nella scena sono stati implementati su Blender e poi importati in formato .obj con relativo file .mtl che ne descrivono le caratteristiche.</p>
+                    <img src="./Images/scenaBlender.jpg" alt="Visualizzazione del progetto" style="width: 100%; max-width: 600px; display: block; margin: 20px auto;">
+                    
+                </div>
+            </div>
+            <div>
+                <h2>Ordinamento del programma</h2>
+                <p>Il progetto è stato sviluppato utilizzando Javascript, integrato con WebGL. 
+                </p>
+                <p>La cartella <i>doc</i> contiene la documentazione del progetto, 
+                    mentre la cartella <i>myproject</i> contiene il progetto stesso, 
+                    all'interno della suddetta cartella troviamo:</p>
+                <ul>
+                    <li>La cartella <i>icon</i> con l'immagine di background per il 
+                        canvas delle istruzioni e della GUI, e l'immagine dell'icona 
+                        usata negli sliders del
+                        pannello GUI.</li>
+                    <li>La cartella <i>oggettiScena</i> contenente tutti i modelli 
+                        della scena, organizzati in cartelle con al loro interno 
+                        i filei<i>.obj</i>, <i>.mtl</i> ed eventuali immagini usate come texture.</li>
+                    <li>La cartella <i>lib</i> che contiene tutte le librerie
+                         usate per 
+                        la realizzazione del progetto.</li>
+                    <li>Abbiamo poi i file <i>.js, .html</i> e <i>.css</i> che compongono  
+                        il progetto.</li>
+                </ul>
+            </div>
+            <div>
+                <div>
+                    <h2>Interfaccia del progetto</h2>
+                        
+                    <p>Caricando il file html in un qualsiasi Browser che 
+                        supporta WebGL si potrà visualizzare il progetto, 
+                        che si mostra come segue:
+                    </p>
+                    <ul>
+                        <li>Interfaccia Desktop:</li>
+                        <img src="./Images/interfaccia.jpg" alt="Visualizzazione del progetto" style="width: 100%; max-width: 600px; display: block; margin: 20px auto;">
+                        <li>Interfaccia Mobile: </li>
+                        <img src="./Images/interfacciaMobile.jpg" alt="Visualizzazione del progetto" style="width: 100%; max-width: 200px; ; height: 400px; display: block; margin: 20px auto;">
+                    </ul>  
+                        
+                    <p>Possiamo notare che l'interfaccia è divisa in 2 
+                    campi: </p>
+                        <ul>
+                            <li>un canvas 3D contenente la scena con tutti i 
+                            suoi modelli.
+                            </li>
+                            <li> 
+                            un canvas contenente un libretto 
+                            delle istruzioni, un pad e una GUI.
+                            </li>
+                        </ul>
+                    <p>
+                        In particolare il libretto istruzioni serve a spiegare 
+                        all'utente i movimenti che esso 
+                        può eseguire. Il pad permette all'utente di muoversi nella 
+                        scena e la GUI contiene degli sliders
+                        e un tasto di abilitazione e disabilitazione 
+                        della stessa, che permette di modificare le luci 
+                        nella scena e la trasparenza dell'acqua 
+                        (rappresentata dal cubo trasparente).
+                        
+                    </p>
+                   
+                </div>
+                <div>
+                    <h2>Descrizione del programma</h2>
+                    <p>La scena è gestita tramite diversi script Javascript, andiamo ad analizzarli:</p>
+                    <ul>
+                        <li>main.js:</li>
+                            Il file <i>main.js</i> è responsabile dell'inizializzazione della scena 
+                            e della dichiarazione delle variabili. Contiene la funzione ' Canvas() ' responsabile 
+                            di ottenere il contesto WebGL. Contiene anche alcune funzioni di 
+                            utilità e una funzione per ridimensionare il canvas nella pagina ( adjustLayout() ) e la
+                             funzione main. Il main contiene il cuore del progetto, chiama funzioni come Canvas(),
+                             GUI() e move() per abilitare i movimenti. Chiama le classi Movement() e creaModello() per 
+                             passare le variabili ai costruttori delle classi e permettere alla camera di muoversi e ai modelli 
+                             di essere caricati. Inoltre chiama le funzioni disegnaModelli e disegnaIstruzioni per disegnare la scena
+                             e il canvas delle istruzioni per l'utente.
+                            <p></p>
+                        <li>creaModello.js:</li>
+                            Il file <i>creaModello.js</i> carica e gestisce i modelli 3D 
+                            visualizzati nella scena, permette il loro movimento (nel caso in cui si 
+                            tratti di modelli animati) tramite la funzione updateMovement(), 
+                            e contiene le funzione disegnaModelli() e draw() che disegnano
+                             i modelli nel canvas 3D e creano le matrici e i buffer necessari
+                             al rendering della scena in movimento, inoltre implementano delle
+                              condizioni specifiche per alcuni modelli (come il modello 'cubo'
+                               che deve avere una trasparenza diversa dagli altri modelli). 
+                            I modelli vengono caricati passandoli alla libreria load_mesh.js  
+                               Di seguito un esempio di modello creato
+                             su Blender e successivamente importato in WebGL.
+                            <img src="./Images/pesceModello.jpg" alt="Visualizzazione del progetto" style="width: 100%; max-width: 200px; ; height: 200px; display: block; margin: 20px auto;">
+                            <p></p>
+                        <li>Movements.js:</li>Il file <i>Movements.js</i> gestisce tutti i 
+                        movimenti che l'utente può eseguire. Essenzialmente è possibile 
+                        modificare la posizione della camera in base agli input 
+                        dell'utente, catturati tramite i listeners di mousedown, mouseup, mousemove, mouseout e 
+                            wheel per l'utilizzo del mouse, touchstart, touchmove e touchend per l'uso del touchscreen, 
+                            e infine keydown e keyup per la tastiera. Ognuno di questi eventi chiama una
+                            funzione 'doKey' o 'handleMouse' o 'handleTouch' che gestisce il movimento relativo all'input ricevuto. 
+                            Di seguito un esempio dei moviemnti che si possono performare con il mouse:
+                            <video controls class="video-centered">
+                                <source src="./Images/movimenti.mp4" type="video/mp4">
+                                Il tuo browser non supporta il tag video.
+                            </video><p></p>
+                        <li>panelgui.js:</li>Il file <i>panelgui.js</i> contiene una GUI customizzata interattiva, che l'utente
+                            può usare per apportare modifiche alla scena, e una canvas 2d con 
+                            le istruzioni. Contiene il pad con i tasti direzionali e 
+                            un pulsante di reset per tornare alla posizione originale 
+                            quando necessario.
+                            Inoltre la trasparenza è gestita abilitando il blending ' gl.enable(gl.BLEND); '
+                            e ' gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); ', quindi gl.SRC_ALPHA utilizza l'alpha del colore di 
+                            origine per determinare il livello di trasparenza da applicare 
+                            all'oggetto cubo per simulare la trasparenza dell'acqua, e gl.ONE_MINUS_SRC_ALPHA fa sì che l'opacità del
+                             background sia complementare a quella del modello.
+                            <video controls class="video-centered">
+                                <source src="./Images/RegistrazioneFunzioniGUI.mp4" type="video/mp4">
+                                Il tuo browser non supporta il tag video.
+                            </video><p></p>
+                        <li>index.html:</li>Il file <i>index.html</i> permette di caricare tutti i file del programma
+                         e delle librerie del progetto, nonché il file di stile .css, così da poter visualizzare 
+                         il progetto tramite Browser (ammesso che il Browser
+                          supporti WebGL). Contiene inoltre i vertex e fragment shaders utilizzati
+                        dal programInfo per creare il programma. Qui possiamo vedere come l'opacità 
+                        venga applicata a ogni pixel. 'opacity' e 'uAlpha' vengono usati per determinare
+                        l'opacità finale del materiale, modificando Alpha tramite GUI si può modificare la trasparenza del cubo.
+                        <p></p>
+                        <li>stile.css:</li>Il file <i>stile.css</i> contiene invece tutta la logica per la visualizzazione 
+                            estetica del programma.
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <h2>References</h2>
+                <ul>
+                    <li><a href="https://webglfundamentals.org/">WebGL Fundamentals</a></li>
+                    <li><a href="http://learnwebgl.brown37.net/index.html">Learn WebGL</a></li>
+                </ul>
+            </div>
+        </div>
+    </body>
+</html>

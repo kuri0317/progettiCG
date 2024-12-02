@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Computer Graphics project 2023/2024</title>
+<link rel="stylesheet" type="text/css" href="stile.css">
+
+</head>
+<body>
+  <h1 class="project-title">Progetto per il corso di Computer Graphics 2023-24 di Cristina Napoli Matricola 0001103127</h1>
+  
+  <div class="container">
+    <canvas id="mycanvas" width="800" height="800"></canvas>
+
+    <div id="backgroundCanvas">
+      <!-- Canvas per le istruzioni e gui-->
+      <div class="instructions-and-gui">
+        <!-- Canvas per le istruzioni -->
+        <canvas id="instructionCanvas" width="350" height="700"></canvas>
+
+        <!-- Contenitore per la GUI -->
+        <div id="gui-container" class="custom-gui">
+
+          <div class="custom-control">
+            <label for="enable-gui">Abilita GUI:</label> <input type="checkbox" id="enable-gui">
+          </div>
+
+          <div class="custom-control">
+            <label for="control-light-color">Colore Luce Puntiforme:</label>
+            <input type="color" id="control-light-color" value="#0000ff" disabled>
+          </div>          
+
+          <div class="custom-control">
+            <label for="control-lx">Luce lungo X:</label>
+            <input type="range" id="control-lx" min="-10" max="10" step="0.1" value="0">
+          </div>
+          <div class="custom-control">
+            <label for="control-ly">Luce lungo Y:</label>
+            <input type="range" id="control-ly" min="-10" max="10" step="0.1" value="10">
+          </div>
+          <div class="custom-control">
+            <label for="control-lz">Luce lungo Z:</label>
+            <input type="range" id="control-lz" min="-10" max="10" step="0.1" value="0">
+          </div>
+          <div class="custom-control">
+            <label for="control-alpha">Alpha:</label>
+            <input type="range" id="control-alpha" min="0" max="1" step="0.01" value="0.2" disabled>
+          </div>
+        </div>
+
+      </div>
+      
+    </div>
+  </div>
+</body>
+
+<!-- vertex shader -->
+<script id="3d-vertex-shader" type="x-shader/x-vertex">
+    // Attributi del vertice
+  attribute vec4 a_position; //vert pos 
+  attribute vec3 a_normal;  //norm del vert 
+  attribute vec2 a_texcoord; //coord texture 
+
+  //uniform della matrx e pos della vista
+  uniform mat4 u_projection; //matrx proiez
+  uniform mat4 u_view; //matrx vista 
+  uniform mat4 u_world; //matrx mondo
+
+  uniform vec3 u_viewWorldPosition; //pos vista nel mondo 
+
+  uniform vec3 u_lightWorldPosition;
+  uniform vec4 uMaterialAmbient;
+
+  //passare dati ai fragment shader 
+  varying vec3 v_normal; //normale trasfor
+  varying vec3 v_surfaceToView; //dir superficie verso vista 
+  varying vec2 v_texcoord;  //coord della texture 
+
+  varying vec3 v_surfaceToLight;
+
+  void main() { 
+    
+    vec4 worldPosition = u_world * a_position; //calcolare pos mondo 
+    gl_Position = u_projection * u_view * worldPosition; //calcol pos vert in clip space
+    
+    vec3 surfaceWorldPosition = (u_world * a_position).xyz;
+
+    v_surfaceToLight = u_lightWorldPosition - surfaceWorldPosition;
+                
+    v_surfaceToView = u_viewWorldPosition - worldPosition.xyz; //calc dir super verso vista 
+    v_normal = mat3(u_world) * a_normal; //trasf normale usando matrx mondo 
+    v_texcoord = a_texcoord; //passa coord della texture al fragment shader 
+  }
+</script>
+
+<!-- fragment shader -->
+<script id="3d-fragment-shader" type="x-shader/x-fragment">
+  precision highp float; //per calcoli, livello di precisione
+
+  //input dal vertexSHader 
+  varying vec3 v_normal; //norm interpol del fragm
+  varying vec3 v_surfaceToView; //direction da sup verso camera
+  varying vec2 v_texcoord; //coord della textur
+
+  varying vec3 v_surfaceToLight;
+
+  //uniform che rappr i param di illumin e material
+  uniform vec3 diffuse; // color diffusion del material 
+  uniform vec3 ambient;  //color ambient del mater 
+  uniform vec3 emissive; //colo emissivo mater 
+  uniform vec3 specular; //color spec mater 
+  uniform float shininess; //lucidita materiale (dim dei riflessi)
+  uniform float opacity;  //opacita mater 
+  uniform vec3 u_lightDirection; //dir luce
+  uniform vec3 u_ambientLight; //luce ambient glob 
+  uniform vec3 u_colorLight; // col luce direzionale
+  uniform vec3 u_pointLightPosition; // Posizione della luce puntiforme
+  uniform vec3 u_pointLightColor;    // Colore della luce puntiforme
+  uniform sampler2D diffuseMap;  //mappa textur per diffusion 
+
+  uniform float uAlpha;
+
+  void main () {
+    //normalizz normal interp (deve essere unitaria)
+    vec3 normal = normalize(v_normal);
+
+    vec3 surfaceToViewDirection = normalize(v_surfaceToView);   //calc direz normalizz dAlla sup verso camera 
+    vec3 halfVector = normalize(u_lightDirection + surfaceToViewDirection);  //calc vett tra dir luce e dir verso camera 
+
+    vec3 surfaceToLightDirection = normalize(v_surfaceToLight);
+               
+    //calcolare compon illumin diffusa (usa prod scal tra dir luce e la normale)
+    float fakeLight = dot(u_lightDirection, normal) * 0.5 + 0.5;  // *0.5 + 0.5* serve a portare i valori da [-1, 1] a [0, 1]
+    //calcolare comp speculare luce 
+    float specularLight = clamp(dot(normal, halfVector), 0.0, 1.0); //clamp evita valori fuori [0 ,1] 
+
+    vec3 surfaceToPointLight = normalize(u_pointLightPosition - v_surfaceToView); //luce puntif 
+    float pointLightFactor = max(dot(normal, surfaceToPointLight), 0.0);
+
+    vec4 diffuseMapColor = texture2D(diffuseMap, v_texcoord);  //recupersre col texture 
+
+    //calc color diff effettivo ( col mat, col textu, col luce )
+    vec3 effectiveDiffuse = diffuse * diffuseMapColor.rgb * u_colorLight.rgb * fakeLight + u_pointLightColor * pointLightFactor;
+    float effectiveOpacity = opacity * diffuseMapColor.a * uAlpha; //calc opac effett (consid opacita)
+
+    //combina per avere col finale 
+    gl_FragColor = vec4(
+        emissive +  //comp emissiva 
+        ambient * u_ambientLight +  //comp luce ambient 
+        effectiveDiffuse * fakeLight +  //compon illumin diffusa 
+        specular * pow(specularLight, shininess), //comp specul 
+        effectiveOpacity //opacita finale 
+        ); 
+  }
+</script>
+
+<!-- librerie --> 
+<script type="text/javascript" src="lib/mesh_utils.js"></script>
+<script type="text/javascript" src="lib/glm_utils.js"></script>
+<script type="text/javascript" src="lib/webgl-utils.js"></script>
+<script type="text/javascript" src="lib/dat.gui.js"></script>
+<script type="text/javascript" src="lib/m4.js"></script>
+<script type="text/javascript" src="lib/jquery-3.6.0.js"></script>
+<script type="text/javascript" src="lib/load_mesh.js"></script>
+<script type="text/javascript" src="lib/gl-matrix.js"></script>
+<!-- script -->
+<script type="text/javascript" src="Movements.js"></script>
+<script type="text/javascript" src="creaModello.js"></script>
+<script type="text/javascript" src="panelgui.js"></script>
+<script type="text/javascript" src="main.js"></script>
+
+</html>
