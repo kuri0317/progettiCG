@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Computer Graphics project with Three.js</title>
+<link rel="stylesheet" type="text/css" href="stile.css">
+</head>
+<body>
+  <h1 class="project-title">Progetto per il corso di Computer Graphics 2023-24 con Three.js di Cristina Napoli</h1>
+  
+  <div class="container">
+    <canvas id="mycanvas" width="800" height="800"></canvas>
+
+    <div id="backgroundCanvas">
+      <!-- Canvas per le istruzioni e gui-->
+      <div class="instructions-and-gui">
+        <!-- Canvas per le istruzioni -->
+        <canvas id="instructionCanvas" width="350" height="700"></canvas>
+
+        <!-- Contenitore per la GUI -->
+        <div id="custom-gui-container" class="custom-gui">
+
+          <div class="custom-control">
+            <label for="enable-gui">Abilita GUI:</label> <input type="checkbox" id="enable-gui">
+          </div>
+
+          <div class="custom-control">
+            <label for="control-light-color">Colore Luce Puntiforme:</label>
+            <input type="color" id="control-light-color" value="#0000ff" disabled>
+          </div>          
+
+          <div class="custom-control">
+            <label for="control-lx">Luce lungo X:</label>
+            <input type="range" id="control-lx" min="-10" max="10" step="0.1" value="0">
+          </div>
+          <div class="custom-control">
+            <label for="control-ly">Luce lungo Y:</label>
+            <input type="range" id="control-ly" min="-10" max="10" step="0.1" value="10">
+          </div>
+          <div class="custom-control">
+            <label for="control-lz">Luce lungo Z:</label>
+            <input type="range" id="control-lz" min="-10" max="10" step="0.1" value="0">
+          </div>
+          <div class="custom-control">
+            <label for="control-alpha">Alpha:</label>
+            <input type="range" id="control-alpha" min="0" max="1" step="0.01" value="0.2" disabled>
+          </div>
+        </div>
+
+      </div>
+      
+    </div>
+  </div>
+</body>
+
+
+<!-- librerie --> 
+<script type="text/javascript" src="./lib/dat.gui.js"></script>
+<!--moduli three -->
+<script src="./lib/three/three.js"></script>
+<script src="./lib/three/loaders/MTLLoader.js"></script>
+<script src="./lib/three/loaders/OBJLoader.js"></script>
+<!--moduli progetto -->
+<script src="./main.js" type="module"></script>
+<script src="./creaModello.js" type="module"></script>
+<script src="./Movements.js" type="module"></script>
+<script src="./panelgui.js" type="module"></script>
+
+</html>
